@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>XTTS + SILMA F5 Voice Studio</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="app">
+<header class="topbar">
+  <div>
+    <div class="brand">🎙️ XTTS + SILMA F5 Voice Studio</div>
+    <div class="subtitle">نسخ صوت احترافي — بدون فيديو</div>
+  </div>
+  <div id="health" class="health">جاري تشغيل المحرك…</div>
+</header>
+
+<main class="container">
+  <section class="hero card">
+    <div>
+      <span class="eyebrow">VOICE CLONING</span>
+      <h1>انسخ صوتك ثم اجعله يتكلم</h1>
+      <p>ارفع عينة صوت بأي صيغة يدعمها FFmpeg، اسمع العينة، اكتب النص، ثم ولّد الصوت واستمع له وحمّله بالصّيغة التي تريدها.</p>
+    </div>
+    <div class="engine">XTTS + SILMA F5<br><small>Arabic Dual Engine · GPU Ready</small></div>
+  </section>
+
+  <section class="grid">
+    <div class="card upload-card">
+      <div class="section-title"><span class="number">1</span><div><h2>رفع صوت المرجع</h2><p>MP3 · WAV · M4A · FLAC · OGG · OPUS وغيرها — لأعلى تطابق: عينة <b>10–30 ثانية</b> واضحة، بدون موسيقى أو ضوضاء، لشخص واحد فقط.</p></div></div>
+      <label id="dropZone" class="dropzone" for="voiceFile">
+        <div class="upload-icon">⬆</div>
+        <strong id="uploadTitle">اضغط لاختيار ملف صوت</strong>
+        <span id="uploadHint">يمكنك أيضًا سحب الملف وإفلاته هنا</span>
+        <input id="voiceFile" type="file" accept="audio/*,.wav,.mp3,.m4a,.flac,.ogg,.opus,.aac,.wma,.aiff,.aif,.amr,.caf,.webm" hidden>
+      </label>
+      <div id="uploadStatus" class="upload-status hidden"></div>
+      <div id="voicePreview" class="preview hidden">
+        <div class="preview-head"><span>🎧 الصوت المرفوع</span><button id="deleteVoice" class="icon-btn" title="حذف الصوت">×</button></div>
+        <audio id="referencePlayer" controls></audio>
+      </div>
+      <input id="voiceName" class="input" placeholder="اسم الصوت — مثال: صوت الشخصية 1" maxlength="60">
+      <button id="saveVoice" class="primary full">حفظ الصوت وتجهيزه</button>
+    </div>
+
+    <div class="card voices-card">
+      <div class="section-title"><span class="number">2</span><div><h2>أصواتي</h2><p>الصوت الذي تم رفعه وتجهيزه يظهر هنا</p></div></div>
+      <div id="voices" class="voices-list"></div>
+      <div id="voicesEmpty" class="empty">لم ترفع أي صوت بعد.</div>
+    </div>
+  </section>
+
+  <section class="card generate-card">
+    <div class="section-title"><span class="number">3</span><div><h2>توليد الصوت</h2><p>اختر الصوت واكتب النص الذي تريد سماعه</p></div></div>
+    <div class="controls">
+      <div class="field"><label>الصوت</label><select id="voiceSelect" class="input"></select></div>
+      <div class="field"><label>اللغة</label><select id="language" class="input"></select></div>
+      <div class="field"><label>دقة المطابقة</label>
+        <select id="fidelity" class="input">
+          <option value="high" selected>🎯 تطابق عالٍ — يستخدم حتى 30 ثانية من العينة</option>
+          <option value="fast">⚡ سريع — يستخدم 6 ثوانٍ فقط</option>
+        </select>
+      </div>
+      <div class="field"><label>محرك الصوت</label>
+        <select id="engine" class="input">
+          <option value="xtts" selected>🎯 XTTS v2 — الأفضل للعربية واللغات المتعددة</option>
+          <option value="f5">✨ SILMA F5 — محرك عربي إضافي</option>
+          <option value="auto">🤖 Auto — ذكي</option>
+          <option value="ensemble">🧠 Dual — XTTS + F5 معًا (مقارنة)</option>
+        </select>
+      </div>
+    </div>
+    <textarea id="text" class="textarea" maxlength="3000" placeholder="اكتب النص هنا… مثال: النار تلفّت، ترى الأرض صارت يبابا"></textarea>
+    <div class="bottom-row"><span id="counter">0 / 3000</span><button id="generate" class="generate">🎙️ نسخ الصوت وتوليد</button></div>
+  </section>
+
+  <section id="resultCard" class="card result-card hidden">
+    <div class="result-top"><div><span class="eyebrow">RESULT</span><h2>تم توليد الصوت بنجاح</h2><p id="resultInfo">جاهز للاستماع والتنزيل.</p></div><span class="success-badge">✓ جاهز</span></div>
+    <audio id="resultPlayer" controls></audio>
+    <div id="alternateResult" class="upload-status hidden" style="margin-top:14px">
+      <strong>✨ SILMA F5 — النتيجة البديلة</strong><br>
+      <audio id="alternatePlayer" controls style="width:100%;margin-top:10px"></audio>
+      <a id="alternateDownload" class="download" style="display:inline-block;margin-top:10px;text-decoration:none" href="#">⬇ تنزيل نتيجة F5</a>
+    </div>
+    <div class="download-row">
+      <select id="downloadFormat" class="input">
+        <option value="wav">WAV — أعلى جودة</option>
+        <option value="mp3">MP3 — 320kbps</option>
+        <option value="m4a">M4A — AAC</option>
+        <option value="flac">FLAC — بدون فقد</option>
+        <option value="ogg">OGG</option>
+        <option value="opus">OPUS</option>
+      </select>
+      <button id="download" class="download">⬇ تنزيل الصوت</button>
+    </div>
+  </section>
+  <section class="card f5-card">
+    <div class="section-title"><span class="number">4</span><div><h2>✨ محرك SILMA F5</h2><p>محرك إضافي للتجربة والمقارنة مع XTTS — بدون RVC أو أي محرك تحويل خارجي.</p></div></div>
+    <div class="upload-status success">✓ الوضع المزدوج يولّد نسختين من نفس العينة والنص. XTTS ليس محوّل صوت لـF5، لذلك لا نقوم بتمرير WAV الناتج من F5 إلى XTTS.</div>
+    <div id="referenceTextWrap" class="field hidden" style="margin-top:12px">
+      <label>نص العينة المرجعية لـ SILMA F5 <small>اكتب الكلام الذي قيل داخل ملف العينة</small></label>
+      <textarea id="referenceText" class="textarea" style="min-height:100px" placeholder="مثال: مرحبًا بكم في الاستوديو الصوتي..."></textarea>
+    </div>
+    <div class="upload-status" style="margin-top:12px">💡 للحصول على أفضل نتيجة مع SILMA F5 استخدم عينة قصيرة ونظيفة. SILMA F5 هو محرك عربي/إنجليزي، وXTTS يبقى الخيار الأوسع للغات المتعددة.</div>
+  </section>
+</main>
+
+<div id="toast" class="toast"></div>
+<script src="/static/app.js"></script>
+</body>
+</html>

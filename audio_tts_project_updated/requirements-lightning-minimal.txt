@@ -1,0 +1,7 @@
+# Lightning AI / Python 3.12 compatible stack
+coqui-tts>=0.27.4,<0.28
+fastapi>=0.115,<1
+uvicorn[standard]>=0.34,<1
+python-multipart>=0.0.20,<1
+soundfile>=0.12.1,<1
+num2words>=0.5.14,<1
